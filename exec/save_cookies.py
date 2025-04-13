@@ -10,3 +10,9 @@ log('Please choice file path\n')
 
 with open(inputf(''), 'w', encoding='utf-8') as f :
     json.dump({'cookies' : cookies}, f, indent=4)
+
+print()
+
+log('Cookies save !')
+
+print()
