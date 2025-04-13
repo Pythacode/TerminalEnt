@@ -44,7 +44,7 @@ if choice == "4" :
 
         pattern = r"^https:\/\/.*\.mon-ent-occitanie\.fr\/?"
 
-        if not re.match(pattern, url) or not data.get("url") or not data.get("username") or not data.get("password") or not data.get("etablisement_name"):
+        if not re.match(pattern, url) or not data.get("url") or not data.get("username") or not data.get("password"):
             url = False
             error("Aucun favori ou favori mal configuré")
             quit()
@@ -55,7 +55,6 @@ if choice == "4" :
             decrypted = f.decrypt(data.get('password').encode())
             password = decrypted.decode()
             username = data.get('username')
-            etablisement_name = data.get("etablisement_name")
             favourite = True
 
     else :
@@ -114,11 +113,13 @@ if not url :
     etablisements = [etablisement.text.split('\n')[1] for etablisement in etablisements]
     etablisements_formated = etablisements[:]
 
-    for index, etablisement in enumerate(etablisements_formated):
+    for index, etablisement in enumerate(etablisements):
         for start in ["LYCEE PROFESSIONNEL", "LYCEE CITÉ SCOLAIRE", "LYCEE POLYVALENT", "LYCEE", "CITE MIXTE", "CITE SCOLAIRE", "COLLEGE", "Collège"] :
             if normaliser(etablisement).startswith(start) :
                 etablisements_formated[index] = etablisement[(len(start) + 1):]
                 break
+
+    print(etablisements, "\n", etablisements_formated)
 
     printf(generate_menu("Sélectionne ton établisement", etablisements_formated))
 
@@ -149,12 +150,13 @@ while True :
 
     
 
-    if connect(username, password, url, etablisement_name) :
+    if connect(username, password, url) :
         log('I\'m log !')
-        user = username
+        config.user = username
+        config.school_name = config.driver.title.replace(' ', "-")
         if not favourite :
             printf(generate_menu("Enregistrer en favoris", ["Oui", "Non"], row=2))
-            choice = inputf(f"""{main_color}┌──({secondary_color}{user}{main_color}@{secondary_color}{school_name}{main_color})─[{secondary_color}{path}{main_color}]\n└─[{secondary_color}{time()}{main_color}]{secondary_color} $ """)
+            choice = inputf("")
             if choice == "1" :
                 generate_key()
                 key = load_key()
@@ -164,7 +166,6 @@ while True :
                     'url' : url,
                     'username' : username,
                     'password' : encrypted.decode(),
-                    'etablisement_name' : etablisement_name
                 }
                 with open("favourite_url.json", "w", encoding="utf-8") as f:
                     json.dump(data, f, indent=4)

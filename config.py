@@ -1,3 +1,4 @@
+import re
 from cryptography.fernet import Fernet
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -104,17 +105,17 @@ def error(arg) :
 def log(arg) :
     printf(f"[{secondary_color}{time()}{main_color}] [{secondary_color}>{main_color}] | {arg}")
 
-def open_driver() :
+def open_driver(headless=True) :
     global driver
     log("Open driver")
 
     options = Options()
-    #options.add_argument("--headless")
+    if headless : options.add_argument("--headless")
 
     driver = webdriver.Firefox(options=options)
     log('Driver opened')
 
-def connect(username, password, url, etablissement_name) :
+def connect(username, password, url) :
     global driver
     global cookies
 
@@ -172,8 +173,15 @@ def connect(username, password, url, etablissement_name) :
     # Valider
     elem = driver.find_element(By.ID, "bouton_valider")
     elem.click()
+
     
-    while not etablissement_name in driver.title : print(etablissement_name, driver.title)
+
+    pattern = r"^https:\/\/.*\.mon-ent-occitanie\.fr\/?"
+
+    while not re.match(pattern, driver.current_url) :
+        pass
+
+    log(driver.title)
 
     if driver.find_elements(By.CLASS_NAME, "fr-error-text") == [] :
         cookies = driver.get_cookies()
