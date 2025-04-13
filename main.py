@@ -199,7 +199,7 @@ while True :
 
         try :
             config.path = "~/" + options[int(choice)-1].replace(' ', '_')
-            with open(script) as f:
+            with open(script, encoding='utf-8') as f:
                 code = f.read()
                 exec(code)
         except Exception as e :
