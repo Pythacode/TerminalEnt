@@ -8,6 +8,7 @@ from selenium.webdriver.firefox.webdriver import Options
 from colorama import Fore
 from datetime import datetime
 import unicodedata
+from threading import Event
 
 secondary_color = Fore.WHITE
 main_color = Fore.BLUE
@@ -16,23 +17,18 @@ error_color = Fore.RED
 path = "~/"
 user = "NoConnect"
 school_name = "NoSelect"
-
-global url
+driver_ready = Event()
 url = ""
-
-global driver
 driver = None
-
-global cookies
 cookies = None
 
 logo = """
-                ███████╗███╗   ██╗████████╗
-                ██╔════╝████╗  ██║╚══██╔══╝
-                █████╗  ██╔██╗ ██║   ██║  
-                ██╔══╝  ██║╚██╗██║   ██║   
-                ███████╗██║ ╚████║   ██║   
-                ╚══════╝╚═╝  ╚═══╝   ╚═╝   """
+                                ███████╗███╗   ██╗████████╗
+                                ██╔════╝████╗  ██║╚══██╔══╝
+                                █████╗  ██╔██╗ ██║   ██║  
+                                ██╔══╝  ██║╚██╗██║   ██║   
+                                ███████╗██║ ╚████║   ██║   
+                                ╚══════╝╚═╝  ╚═══╝   ╚═╝   """
 
 for i in ['╗', '╔', '╝', '═', '╚', '║', '╔', '╚', '╔', '╚', '╔', '╚', '╝', '╔', '╝', '═', '╚', '╝', '═'] : 
     logo = logo.replace(i, f"{secondary_color}{i}{main_color}") # Rend les ombres blanches
@@ -110,20 +106,21 @@ def log(arg) :
 
 def open_driver(headless=True) :
     global driver
-    log("Open driver")
 
     options = Options()
     if headless : options.add_argument("--headless")
 
     driver = webdriver.Firefox(options=options)
-    log('Driver opened')
+    driver_ready.set()
 
 def connect(username, password) :
     global driver
     global cookies
     global url
 
-    if not driver : open_driver()
+    if not driver_ready.is_set():
+        log("Wait driver ready...")
+        driver_ready.wait()  # Bloque ici jusqu'à ce que open_driver() ait terminé
 
     if driver.title == "" : open_page = False
     else : open_page = True
@@ -184,8 +181,6 @@ def connect(username, password) :
 
     while not re.match(pattern, driver.current_url) :
         pass
-
-    log(driver.title)
 
     if driver.find_elements(By.CLASS_NAME, "fr-error-text") == [] :
         cookies = driver.get_cookies()

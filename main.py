@@ -9,10 +9,12 @@ from config import *
 import config
 from getpass import getpass
 import json
+import threading
 
 init(autoreset=True)
 
 #open_driver()
+threading.Thread(target=open_driver, daemon=True).start()
 
 printf(logo)
 
@@ -181,6 +183,7 @@ while True :
         printf(generate_menu("Options", options))
 
         choice = inputf("")
+        print()
 
         try :
             int(choice)
