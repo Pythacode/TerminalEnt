@@ -149,8 +149,8 @@ while True :
         print()
 
     
-
-    if connect(username, password, url) :
+    config.url = url
+    if connect(username, password) :
         log('I\'m log !')
         config.user = username
         config.school_name = config.driver.title.replace(' ', "-")
@@ -195,7 +195,7 @@ while True :
         script = 'exec/' + options[int(choice)-1].replace(' ', '_') + '.py'
 
         try :
-            path = ["~/" + options[int(choice)-1].replace(' ', '_')]
+            config.path = "~/" + options[int(choice)-1].replace(' ', '_')
             with open(script) as f:
                 code = f.read()
                 exec(code)

@@ -17,6 +17,9 @@ path = "~/"
 user = "NoConnect"
 school_name = "NoSelect"
 
+global url
+url = ""
+
 global driver
 driver = None
 
@@ -115,9 +118,10 @@ def open_driver(headless=True) :
     driver = webdriver.Firefox(options=options)
     log('Driver opened')
 
-def connect(username, password, url) :
+def connect(username, password) :
     global driver
     global cookies
+    global url
 
     if not driver : open_driver()
 
